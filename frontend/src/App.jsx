@@ -161,6 +161,9 @@ function App() {
   // AI Performance State
   const [aiPerformance, setAiPerformance] = useState([]);
   
+  // History Table Sort State
+  const [historySortConfig, setHistorySortConfig] = useState({ key: 'formatted_date', direction: 'desc' });
+  
   // Watchlist state (persisted)
   const [watchlist, setWatchlist] = useState(() => {
     const saved = localStorage.getItem('nse_watchlist');
@@ -488,16 +491,16 @@ function App() {
                 <tbody>
                   {activeMainView === 'ai_performance' ? (
                     processedData.map((stock, idx) => (
-                      <tr key={idx} onClick={() => { setSelectedStock(stock.Symbol); setActiveMainView('details'); }}>
-                        <td className="symbol-cell font-bold">{stock.Prediction_Date}</td>
-                        <td className="symbol-cell font-bold">{stock.Symbol}</td>
-                        <td className="text-right font-mono" style={{ color: '#d946ef' }}>
+                      <tr key={idx} onClick={() => { setSelectedStock(stock.Symbol); setActiveMainView('details'); }} className="group hover:bg-surface-container transition-colors cursor-pointer">
+                        <td className="p-4 text-on-surface font-bold whitespace-nowrap border-b border-surface-border/50">{stock.Prediction_Date}</td>
+                        <td className="p-4 text-on-surface font-bold whitespace-nowrap border-b border-surface-border/50">{stock.Symbol}</td>
+                        <td className="p-4 text-right font-mono border-b border-surface-border/50" style={{ color: '#d946ef' }}>
                           {stock['Surge_Prob_%']}%
                         </td>
-                        <td className="text-right" style={{ fontSize: '12px', color: (stock['Confidence'] || '').includes('HIGH') ? '#4ade80' : '#facc15' }}>
+                        <td className="p-4 text-right border-b border-surface-border/50" style={{ fontSize: '12px', color: (stock['Confidence'] || '').includes('HIGH') ? '#4ade80' : '#facc15' }}>
                           {stock['Confidence']}
                         </td>
-                        <td className="text-right font-mono font-bold" style={{
+                        <td className="p-4 text-right font-mono font-bold border-b border-surface-border/50" style={{
                           color: stock['Realized_Return_%'] > 0 ? '#4ade80' : stock['Realized_Return_%'] < 0 ? '#f87171' : '#94a3b8'
                         }}>
                           {stock['Realized_Return_%'] !== null ? `${stock['Realized_Return_%'] > 0 ? '+' : ''}${stock['Realized_Return_%']}%` : 'Pending'}
@@ -506,30 +509,30 @@ function App() {
                     ))
                   ) : activeMainView === 'ai_table' ? (
                     processedData.map((stock, idx) => (
-                      <tr key={idx} onClick={() => { setSelectedStock(stock.Symbol); setActiveMainView('details'); }}>
-                        <td className="symbol-cell font-bold">{stock.Symbol}</td>
-                        <td className={`text-right font-mono ${stock['Latest_Return_%'] >= 0 ? 'positive' : 'negative'}`}>
+                      <tr key={idx} onClick={() => { setSelectedStock(stock.Symbol); setActiveMainView('details'); }} className="group hover:bg-surface-container transition-colors cursor-pointer">
+                        <td className="p-4 text-on-surface font-bold whitespace-nowrap border-b border-surface-border/50">{stock.Symbol}</td>
+                        <td className={`p-4 text-right font-mono border-b border-surface-border/50 ${stock['Latest_Return_%'] >= 0 ? 'text-bullish' : 'text-bearish'}`}>
                           {stock['Latest_Return_%'] > 0 ? '+' : ''}{stock['Latest_Return_%']}%
                         </td>
-                        <td className="text-right font-mono" style={{
+                        <td className="p-4 text-right font-mono border-b border-surface-border/50" style={{
                           color: stock['RSI'] > 70 ? '#f87171' : stock['RSI'] < 30 ? '#4ade80' : '#e2e8f0'
                         }}>
                           {stock['RSI'] ?? '—'}
                         </td>
-                        <td className="text-right font-mono">{stock['Volume_Surge_x'] ?? stock['VolumeSurge'] ?? '—'}x</td>
-                        <td className={`text-right font-mono ${ (stock['Corp_Ann_Sentiment'] ?? 0) > 0 ? 'positive' : (stock['Corp_Ann_Sentiment'] ?? 0) < 0 ? 'negative' : '' }`}>
+                        <td className="p-4 text-right font-mono border-b border-surface-border/50">{stock['Volume_Surge_x'] ?? stock['VolumeSurge'] ?? '—'}x</td>
+                        <td className={`p-4 text-right font-mono border-b border-surface-border/50 ${ (stock['Corp_Ann_Sentiment'] ?? 0) > 0 ? 'text-bullish' : (stock['Corp_Ann_Sentiment'] ?? 0) < 0 ? 'text-bearish' : '' }`}>
                           {stock['Corp_Ann_Sentiment'] ?? '—'}
                         </td>
-                        <td className={`text-right font-mono ${ (stock['News_Sentiment'] ?? 0) > 0 ? 'positive' : (stock['News_Sentiment'] ?? 0) < 0 ? 'negative' : '' }`}>
+                        <td className={`p-4 text-right font-mono border-b border-surface-border/50 ${ (stock['News_Sentiment'] ?? 0) > 0 ? 'text-bullish' : (stock['News_Sentiment'] ?? 0) < 0 ? 'text-bearish' : '' }`}>
                           {stock['News_Sentiment'] ?? '—'}
                         </td>
-                        <td className="text-right" style={{ fontSize: '11px', color: '#94a3b8', maxWidth: '140px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <td className="p-4 text-right border-b border-surface-border/50" style={{ fontSize: '11px', color: '#94a3b8', maxWidth: '140px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {stock['Patterns_Detected'] || '—'}
                         </td>
-                        <td className="text-right font-mono" style={{ color: '#d946ef', fontWeight: 'bold' }}>
+                        <td className="p-4 text-right font-mono border-b border-surface-border/50" style={{ color: '#d946ef', fontWeight: 'bold' }}>
                           {stock['Surge_Prob_%'] ?? stock['Prediction_Surge_Prob_%']}%
                         </td>
-                        <td className="text-right" style={{
+                        <td className="p-4 text-right border-b border-surface-border/50" style={{
                           fontWeight: 600, fontSize: '12px',
                           color: (stock['Confidence'] || '').includes('HIGH') ? '#4ade80'
                                : (stock['Confidence'] || '').includes('MEDIUM') ? '#facc15' : '#94a3b8'
@@ -540,18 +543,18 @@ function App() {
                     ))
                   ) : (
                     processedData.map((stock, idx) => (
-                      <tr key={idx} onClick={() => { setSelectedStock(stock.symbol); setActiveMainView('details'); }}>
-                        <td className="symbol-cell font-bold">{stock.symbol}</td>
-                        <td className="company-cell">{stock.companyName}</td>
-                        <td className="text-right font-mono">
+                      <tr key={idx} onClick={() => { setSelectedStock(stock.symbol); setActiveMainView('details'); }} className="group hover:bg-surface-container transition-colors cursor-pointer">
+                        <td className="p-4 text-on-surface font-bold whitespace-nowrap border-b border-surface-border/50">{stock.symbol}</td>
+                        <td className="p-4 text-text-muted text-sm border-b border-surface-border/50 truncate max-w-[200px]">{stock.companyName}</td>
+                        <td className="p-4 text-right font-mono border-b border-surface-border/50">
                           {stock.ltp ? parseFloat(stock.ltp).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}
                         </td>
-                        <td className={`text-right font-mono ${parseFloat(stock.pChange) >= 0 ? 'positive' : 'negative'}`}>
+                        <td className={`p-4 text-right font-mono border-b border-surface-border/50 ${parseFloat(stock.pChange) >= 0 ? 'text-bullish' : 'text-bearish'}`}>
                           {parseFloat(stock.pChange) > 0 ? '+' : ''}{stock.pChange}%
                         </td>
-                        <td className="text-right font-mono">{parseInt(stock.volume || 0).toLocaleString('en-IN')}</td>
+                        <td className="p-4 text-right font-mono border-b border-surface-border/50">{parseInt(stock.volume || 0).toLocaleString('en-IN')}</td>
                         {activeMainView === 'gainers_table' && (
-                          <td className="text-right font-mono">
+                          <td className="p-4 text-right font-mono border-b border-surface-border/50">
                             {stock.turnover ? parseFloat(stock.turnover).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}
                           </td>
                         )}
@@ -584,56 +587,55 @@ function App() {
         ) : metrics ? (
           <>
             {/* Stock Header */}
-            <header className="stock-header">
-              <div className="stock-title-section">
-                <h2 className="stock-name-header" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+              <div className="flex flex-col gap-1">
+                <h2 className="font-headline-md text-2xl md:text-3xl text-on-surface flex items-center gap-3">
                   {selectedStock}
                   <button 
-                    className={`star-btn ${watchlist.includes(selectedStock) ? 'active' : ''}`} 
+                    className={`transition-colors ${watchlist.includes(selectedStock) ? 'text-primary' : 'text-outline hover:text-primary'}`} 
                     onClick={() => toggleWatchlist(selectedStock)}
                     title={watchlist.includes(selectedStock) ? "Remove from Watchlist" : "Add to Watchlist"}
-                    style={{ transform: 'scale(1.2)' }}
                   >
-                    <Star size={18} fill={watchlist.includes(selectedStock) ? "currentColor" : "none"} />
+                    <Star size={24} fill={watchlist.includes(selectedStock) ? "currentColor" : "none"} />
                   </button>
                 </h2>
-                <div className="stock-type-tag">
+                <div className="font-label-caps text-xs text-text-muted flex items-center gap-2">
                   {isIndex(selectedStock) ? 'NSE Stock Market Index' : 'NSE Equity Share'}
                   &bull;
                   <span>Updated: {metrics.lastUpdated}</span>
                 </div>
               </div>
-              <div className="price-summary">
-                <span className="price-val">
+              <div className="flex flex-col items-start md:items-end">
+                <span className="font-display-lg text-3xl md:text-4xl text-on-surface tracking-tight">
                   ₹{metrics.ltp.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
-                <span className={`price-change ${metrics.changePercent >= 0 ? 'positive' : 'negative'}`}>
-                  {metrics.changePercent >= 0 ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
+                <span className={`font-label-caps text-sm flex items-center gap-1 mt-1 ${metrics.changePercent >= 0 ? 'text-bullish' : 'text-bearish'}`}>
+                  {metrics.changePercent >= 0 ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
                   {metrics.changePercent >= 0 ? '+' : ''}{metrics.changePercent.toFixed(2)}%
                 </span>
               </div>
             </header>
 
             {/* Metrics Grid */}
-            <section className="metrics-grid">
-              <div className="metric-card glass-panel">
-                <span className="metric-label">Traded Volume</span>
-                <span className="metric-value">{metrics.volume.toLocaleString('en-IN')}</span>
+            <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="bg-surface-subtle border border-surface-border p-4 rounded-xl flex flex-col gap-1">
+                <span className="font-label-caps text-[10px] md:text-xs text-text-muted uppercase">Traded Volume</span>
+                <span className="font-data-tabular text-lg md:text-xl text-on-surface font-bold">{metrics.volume.toLocaleString('en-IN')}</span>
               </div>
-              <div className="metric-card glass-panel">
-                <span className="metric-label">Average Close Price</span>
-                <span className="metric-value">
+              <div className="bg-surface-subtle border border-surface-border p-4 rounded-xl flex flex-col gap-1">
+                <span className="font-label-caps text-[10px] md:text-xs text-text-muted uppercase">Average Close Price</span>
+                <span className="font-data-tabular text-lg md:text-xl text-on-surface font-bold">
                   ₹{metrics.averagePrice.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
               </div>
-              <div className="metric-card glass-panel" style={{ gridColumn: 'span 2' }}>
-                <span className="metric-label">52-Week Range Indicator</span>
-                <div className="fifty-two-week-slider">
-                  <div className="fifty-two-week-track">
-                    <div className="fifty-two-week-fill" style={{ width: `${get52WeekPercentage()}%` }} />
-                    <div className="fifty-two-week-pointer" style={{ left: `${get52WeekPercentage()}%` }} />
+              <div className="bg-surface-subtle border border-surface-border p-4 rounded-xl flex flex-col gap-1 col-span-2">
+                <span className="font-label-caps text-[10px] md:text-xs text-text-muted uppercase">52-Week Range Indicator</span>
+                <div className="w-full mt-3">
+                  <div className="h-1.5 w-full bg-surface-border rounded-full relative">
+                    <div className="h-full bg-primary/30 rounded-full absolute top-0 left-0" style={{ width: `${get52WeekPercentage()}%` }} />
+                    <div className="w-3 h-3 bg-primary rounded-full absolute top-1/2 -translate-y-1/2 -ml-1.5 border-2 border-background" style={{ left: `${get52WeekPercentage()}%` }} />
                   </div>
-                  <div className="fifty-two-week-labels">
+                  <div className="flex justify-between font-label-caps text-[10px] text-text-muted mt-2">
                     <span>52W L: ₹{metrics.low_52week.toLocaleString('en-IN')}</span>
                     <span>52W H: ₹{metrics.high_52week.toLocaleString('en-IN')}</span>
                   </div>
@@ -642,18 +644,18 @@ function App() {
               
               {metrics.aiSurgeProb !== undefined && metrics.aiSurgeProb !== null && (
                 <>
-                  <div className="metric-card glass-panel ai-highlight" style={{ borderLeft: '4px solid #d946ef' }}>
-                    <span className="metric-label">Surge Probability (AI v2)</span>
-                    <span className="metric-value" style={{ color: '#d946ef' }}>{metrics.aiSurgeProb}%</span>
+                  <div className="bg-surface-subtle border border-surface-border border-l-4 border-l-[#d946ef] p-4 rounded-xl flex flex-col gap-1 shadow-[0_0_15px_rgba(217,70,239,0.1)]">
+                    <span className="font-label-caps text-[10px] md:text-xs text-text-muted uppercase">Surge Probability (AI v2)</span>
+                    <span className="font-data-tabular text-lg md:text-xl font-bold" style={{ color: '#d946ef' }}>{metrics.aiSurgeProb}%</span>
                     {metrics.aiSignalStrength && (
-                      <span style={{ fontSize: '12px', marginTop: '4px', opacity: 0.8, color: '#facc15' }}>
+                      <span className="text-[10px] font-label-caps font-bold mt-1 text-bullish">
                         Strength: {metrics.aiSignalStrength}
                       </span>
                     )}
                   </div>
-                  <div className="metric-card glass-panel">
-                    <span className="metric-label">Detected Patterns</span>
-                    <span className="metric-value" style={{ fontSize: '14px', lineHeight: '1.4' }}>
+                  <div className="bg-surface-subtle border border-surface-border p-4 rounded-xl flex flex-col gap-1">
+                    <span className="font-label-caps text-[10px] md:text-xs text-text-muted uppercase">Detected Patterns</span>
+                    <span className="font-body-md text-sm text-on-surface leading-tight mt-1">
                       {metrics.aiPatterns || "None detected"}
                     </span>
                   </div>
@@ -663,146 +665,149 @@ function App() {
 
             {/* Deep-Dive Integration Grid */}
             {deepDive && (
-              <section className="deep-dive-grid">
+              <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
                 {/* Fundamentals */}
                 {deepDive.fundamentals && (
-                  <div className="deep-dive-card glass-panel">
-                    <h3 className="deep-dive-title"><Award size={16}/> Fundamentals</h3>
-                    <div className="deep-dive-row"><span className="dd-label">P/E Ratio</span><span className="dd-value">{deepDive.fundamentals.PE_Ratio ?? 'N/A'}</span></div>
-                    <div className="deep-dive-row"><span className="dd-label">P/B Ratio</span><span className="dd-value">{deepDive.fundamentals.PB_Ratio ?? 'N/A'}</span></div>
-                    <div className="deep-dive-row"><span className="dd-label">ROE</span><span className="dd-value">{deepDive.fundamentals.ROE ? `${deepDive.fundamentals.ROE}%` : 'N/A'}</span></div>
-                    <div className="deep-dive-row"><span className="dd-label">Debt to Equity</span><span className="dd-value">{deepDive.fundamentals.Debt_to_Equity ?? 'N/A'}</span></div>
+                  <div className="bg-surface-subtle border border-surface-border p-5 rounded-xl flex flex-col gap-3">
+                    <h3 className="font-headline-md text-lg text-on-surface flex items-center gap-2 mb-2 pb-2 border-b border-surface-border"><Award size={18}/> Fundamentals</h3>
+                    <div className="flex justify-between items-center"><span className="font-body-md text-sm text-text-muted">P/E Ratio</span><span className="font-data-tabular text-sm text-on-surface font-medium">{deepDive.fundamentals.PE_Ratio ?? 'N/A'}</span></div>
+                    <div className="flex justify-between items-center"><span className="font-body-md text-sm text-text-muted">P/B Ratio</span><span className="font-data-tabular text-sm text-on-surface font-medium">{deepDive.fundamentals.PB_Ratio ?? 'N/A'}</span></div>
+                    <div className="flex justify-between items-center"><span className="font-body-md text-sm text-text-muted">ROE</span><span className="font-data-tabular text-sm text-on-surface font-medium">{deepDive.fundamentals.ROE ? `${deepDive.fundamentals.ROE}%` : 'N/A'}</span></div>
+                    <div className="flex justify-between items-center"><span className="font-body-md text-sm text-text-muted">Debt to Equity</span><span className="font-data-tabular text-sm text-on-surface font-medium">{deepDive.fundamentals.Debt_to_Equity ?? 'N/A'}</span></div>
                   </div>
                 )}
                 
                 {/* Sentiment */}
                 {deepDive.sentiment && (
-                  <div className="deep-dive-card glass-panel">
-                    <h3 className="deep-dive-title"><Activity size={16}/> Real-Time Sentiment</h3>
-                    <div className="deep-dive-row">
-                      <span className="dd-label">News Sentiment</span>
-                      <span className={`dd-value ${deepDive.sentiment.News_Sentiment > 0 ? 'positive' : deepDive.sentiment.News_Sentiment < 0 ? 'negative' : ''}`}>
+                  <div className="bg-surface-subtle border border-surface-border p-5 rounded-xl flex flex-col gap-3">
+                    <h3 className="font-headline-md text-lg text-on-surface flex items-center gap-2 mb-2 pb-2 border-b border-surface-border"><Activity size={18}/> Real-Time Sentiment</h3>
+                    <div className="flex justify-between items-center">
+                      <span className="font-body-md text-sm text-text-muted">News Sentiment</span>
+                      <span className={`font-data-tabular text-sm font-medium ${deepDive.sentiment.News_Sentiment > 0 ? 'text-bullish' : deepDive.sentiment.News_Sentiment < 0 ? 'text-bearish' : 'text-on-surface'}`}>
                         {deepDive.sentiment.News_Sentiment}
                       </span>
                     </div>
-                    <div className="deep-dive-row">
-                      <span className="dd-label">Social Sentiment</span>
-                      <span className={`dd-value ${deepDive.sentiment.Social_Sentiment > 0 ? 'positive' : deepDive.sentiment.Social_Sentiment < 0 ? 'negative' : ''}`}>
+                    <div className="flex justify-between items-center">
+                      <span className="font-body-md text-sm text-text-muted">Social Sentiment</span>
+                      <span className={`font-data-tabular text-sm font-medium ${deepDive.sentiment.Social_Sentiment > 0 ? 'text-bullish' : deepDive.sentiment.Social_Sentiment < 0 ? 'text-bearish' : 'text-on-surface'}`}>
                         {deepDive.sentiment.Social_Sentiment}
                       </span>
                     </div>
-                    <div className="deep-dive-row">
-                      <span className="dd-label">Last Updated</span>
-                      <span className="dd-value" style={{fontSize:'12px', color:'#8b949e'}}>{deepDive.sentiment.Date}</span>
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="font-body-md text-xs text-text-muted">Last Updated</span>
+                      <span className="font-data-tabular text-xs text-outline">{deepDive.sentiment.Date}</span>
                     </div>
                   </div>
                 )}
 
                 {/* Microstructure */}
                 {deepDive.microstructure && (
-                  <div className="deep-dive-card glass-panel">
-                    <h3 className="deep-dive-title"><ChartLine size={16}/> Microstructure</h3>
-                    <div className="deep-dive-row">
-                      <span className="dd-label">Bid-Ask Spread</span>
-                      <span className="dd-value">{deepDive.microstructure.Bid_Ask_Spread ?? 'N/A'}</span>
+                  <div className="bg-surface-subtle border border-surface-border p-5 rounded-xl flex flex-col gap-3">
+                    <h3 className="font-headline-md text-lg text-on-surface flex items-center gap-2 mb-2 pb-2 border-b border-surface-border"><ChartLine size={18}/> Microstructure</h3>
+                    <div className="flex justify-between items-center">
+                      <span className="font-body-md text-sm text-text-muted">Bid-Ask Spread</span>
+                      <span className="font-data-tabular text-sm text-on-surface font-medium">{deepDive.microstructure.Bid_Ask_Spread ?? 'N/A'}</span>
                     </div>
-                    <div className="deep-dive-row">
-                      <span className="dd-label">Order Imbalance</span>
-                      <span className={`dd-value ${deepDive.microstructure.Order_Book_Imbalance > 0 ? 'positive' : 'negative'}`}>
+                    <div className="flex justify-between items-center">
+                      <span className="font-body-md text-sm text-text-muted">Order Imbalance</span>
+                      <span className={`font-data-tabular text-sm font-medium ${deepDive.microstructure.Order_Book_Imbalance > 0 ? 'text-bullish' : 'text-bearish'}`}>
                         {deepDive.microstructure.Order_Book_Imbalance ?? 'N/A'}
                       </span>
                     </div>
-                    <div className="deep-dive-row">
-                      <span className="dd-label">Volume Profile</span>
-                      <span className="dd-value">{deepDive.microstructure.Volume_Profile ?? 'N/A'}</span>
+                    <div className="flex justify-between items-center">
+                      <span className="font-body-md text-sm text-text-muted">Volume Profile</span>
+                      <span className="font-data-tabular text-sm text-on-surface font-medium">{deepDive.microstructure.Volume_Profile ?? 'N/A'}</span>
                     </div>
                   </div>
                 )}
 
                 {/* Recent Deals */}
                 {deepDive.deals && deepDive.deals.length > 0 && (
-                  <div className="deep-dive-card glass-panel" style={{ gridColumn: '1 / -1' }}>
-                    <h3 className="deep-dive-title"><Globe size={16}/> Recent Bulk & Block Deals</h3>
-                    <table className="deals-table">
-                      <thead>
-                        <tr>
-                          <th>Date</th>
-                          <th>Client Name</th>
-                          <th>Buy/Sell</th>
-                          <th style={{textAlign:'right'}}>Quantity</th>
-                          <th style={{textAlign:'right'}}>Price (₹)</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {deepDive.deals.map((deal, i) => (
-                          <tr key={i}>
-                            <td>{deal.Date}</td>
-                            <td>{deal['Client Name']}</td>
-                            <td className={deal['Buy/Sell'] === 'BUY' ? 'positive' : 'negative'}>{deal['Buy/Sell']}</td>
-                            <td style={{textAlign:'right'}}>{parseInt(deal.Quantity).toLocaleString('en-IN')}</td>
-                            <td style={{textAlign:'right'}}>{parseFloat(deal.Price).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                  <div className="bg-surface-subtle border border-surface-border p-5 rounded-xl flex flex-col gap-3 md:col-span-2 xl:col-span-3">
+                    <h3 className="font-headline-md text-lg text-on-surface flex items-center gap-2 mb-2 pb-2 border-b border-surface-border"><Globe size={18}/> Recent Bulk & Block Deals</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse min-w-[600px]">
+                        <thead>
+                          <tr>
+                            <th className="font-label-caps text-[10px] md:text-xs text-text-muted uppercase border-b border-surface-border pb-2">Date</th>
+                            <th className="font-label-caps text-[10px] md:text-xs text-text-muted uppercase border-b border-surface-border pb-2">Client Name</th>
+                            <th className="font-label-caps text-[10px] md:text-xs text-text-muted uppercase border-b border-surface-border pb-2">Buy/Sell</th>
+                            <th className="font-label-caps text-[10px] md:text-xs text-text-muted uppercase border-b border-surface-border pb-2 text-right">Quantity</th>
+                            <th className="font-label-caps text-[10px] md:text-xs text-text-muted uppercase border-b border-surface-border pb-2 text-right">Price (₹)</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {deepDive.deals.map((deal, i) => (
+                            <tr key={i} className="group hover:bg-surface-container transition-colors">
+                              <td className="font-data-tabular text-sm py-2 border-b border-surface-border/50">{deal.Date}</td>
+                              <td className="font-body-md text-sm py-2 border-b border-surface-border/50">{deal['Client Name']}</td>
+                              <td className={`font-label-caps text-xs py-2 border-b border-surface-border/50 ${deal['Buy/Sell'] === 'BUY' ? 'text-bullish' : 'text-bearish'}`}>{deal['Buy/Sell']}</td>
+                              <td className="font-data-tabular text-sm py-2 border-b border-surface-border/50 text-right">{parseInt(deal.Quantity).toLocaleString('en-IN')}</td>
+                              <td className="font-data-tabular text-sm py-2 border-b border-surface-border/50 text-right">{parseFloat(deal.Price).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 )}
               </section>
             )}
 
             {/* Tabs */}
-            <nav className="tabs-navigation">
-              <button className={`tab-btn ${activeTab === 'chart' ? 'active' : ''}`} onClick={() => setActiveTab('chart')}>
+            <nav className="flex gap-2 border-b border-surface-border mb-6 overflow-x-auto pb-1 scrollbar-hide">
+              <button className={`flex items-center gap-2 px-4 py-2 font-label-caps text-xs md:text-sm transition-colors rounded-t-lg whitespace-nowrap ${activeTab === 'chart' ? 'bg-surface-subtle text-primary border-b-2 border-primary' : 'text-text-muted hover:text-on-surface hover:bg-surface-container'}`} onClick={() => setActiveTab('chart')}>
                 <ChartLine size={18} /> Interactive Chart
               </button>
-              <button className={`tab-btn ${activeTab === 'table' ? 'active' : ''}`} onClick={() => setActiveTab('table')}>
+              <button className={`flex items-center gap-2 px-4 py-2 font-label-caps text-xs md:text-sm transition-colors rounded-t-lg whitespace-nowrap ${activeTab === 'table' ? 'bg-surface-subtle text-primary border-b-2 border-primary' : 'text-text-muted hover:text-on-surface hover:bg-surface-container'}`} onClick={() => setActiveTab('table')}>
                 <FileText size={18} /> Historical Data Table
               </button>
-              <button className={`tab-btn ${activeTab === 'announcements' ? 'active' : ''}`} onClick={() => setActiveTab('announcements')}>
+              <button className={`flex items-center gap-2 px-4 py-2 font-label-caps text-xs md:text-sm transition-colors rounded-t-lg whitespace-nowrap ${activeTab === 'announcements' ? 'bg-surface-subtle text-primary border-b-2 border-primary' : 'text-text-muted hover:text-on-surface hover:bg-surface-container'}`} onClick={() => setActiveTab('announcements')}>
                 <FileText size={18} /> Corporate Announcements ({announcements.length})
               </button>
-              <button className={`tab-btn ${activeTab === 'news' ? 'active' : ''}`} onClick={() => setActiveTab('news')}>
+              <button className={`flex items-center gap-2 px-4 py-2 font-label-caps text-xs md:text-sm transition-colors rounded-t-lg whitespace-nowrap ${activeTab === 'news' ? 'bg-surface-subtle text-primary border-b-2 border-primary' : 'text-text-muted hover:text-on-surface hover:bg-surface-container'}`} onClick={() => setActiveTab('news')}>
                 <Newspaper size={18} /> Live News Feed
               </button>
             </nav>
 
             {/* Tab Panels */}
-            <section style={{ flex: 1 }}>
+            <section className="flex-1 mb-10">
               {/* Chart Tab */}
               {activeTab === 'chart' && (
-                <div className="chart-panel glass-panel">
-                  <div className="chart-header">
-                    <span className="chart-title">Chronological Daily Prices</span>
-                    <span className="stock-type-tag">1-Year History</span>
+                <div className="bg-surface-subtle border border-surface-border p-5 rounded-xl h-[500px] flex flex-col">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="font-headline-md text-lg text-on-surface">Chronological Daily Prices</span>
+                    <span className="font-label-caps text-xs text-text-muted flex gap-2 items-center">1-Year History</span>
                   </div>
                   {history.length > 0 ? (
                     <ResponsiveContainer width="100%" height="90%">
                       <AreaChart data={[...history].sort((a, b) => new Date(a.formatted_date) - new Date(b.formatted_date))} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                         <defs>
                           <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="var(--accent-color)" stopOpacity={0.4} />
-                            <stop offset="95%" stopColor="var(--accent-color)" stopOpacity={0.0} />
+                            <stop offset="5%" stopColor="#818cf8" stopOpacity={0.4} />
+                            <stop offset="95%" stopColor="#818cf8" stopOpacity={0.0} />
                           </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                        <XAxis dataKey="formatted_date" stroke="var(--text-secondary)" fontSize={11} tickLine={false} dy={10} />
-                        <YAxis domain={['auto', 'auto']} stroke="var(--text-secondary)" fontSize={11} tickLine={false} orientation="right" />
+                        <XAxis dataKey="formatted_date" stroke="#94a3b8" fontSize={11} tickLine={false} dy={10} />
+                        <YAxis domain={['auto', 'auto']} stroke="#94a3b8" fontSize={11} tickLine={false} orientation="right" />
                         <Tooltip
                           contentStyle={{
-                            background: 'rgba(20, 30, 45, 0.95)',
-                            borderColor: 'var(--accent-color)',
-                            borderRadius: '10px',
-                            color: '#fff',
-                            fontSize: '12px'
+                            background: '#1e293b',
+                            borderColor: '#334155',
+                            borderRadius: '8px',
+                            color: '#f8fafc',
+                            fontSize: '12px',
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
                           }}
-                          labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
+                          labelStyle={{ fontWeight: 'bold', marginBottom: '4px', color: '#94a3b8' }}
                         />
-                        <Area type="monotone" dataKey="Close" stroke="var(--accent-color)" strokeWidth={2} fillOpacity={1} fill="url(#colorPrice)" />
+                        <Area type="monotone" dataKey="Close" stroke="#818cf8" strokeWidth={2} fillOpacity={1} fill="url(#colorPrice)" />
                       </AreaChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="empty-state">
-                      <span className="empty-title">No Chart Data Available</span>
+                    <div className="flex flex-col items-center justify-center flex-1 text-center h-full">
+                      <span className="font-headline-md text-lg text-text-muted">No Chart Data Available</span>
                     </div>
                   )}
                 </div>
@@ -810,36 +815,69 @@ function App() {
 
               {/* Data Table Tab */}
               {activeTab === 'table' && (
-                <div className="data-table-container glass-panel" style={{ height: '500px' }}>
-                  <div className="chart-header">
-                    <span className="chart-title">Historical Daily Prices</span>
+                <div className="bg-surface-subtle border border-surface-border p-5 rounded-xl flex flex-col h-[500px]">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="font-headline-md text-lg text-on-surface">Historical Daily Prices</span>
                   </div>
-                  <div className="table-wrapper">
-                    <table className="nse-data-table">
+                  <div className="overflow-x-auto flex-1 scrollbar-thin scrollbar-thumb-surface-border scrollbar-track-transparent">
+                    <table className="w-full text-left border-collapse min-w-[600px]">
                       <thead>
                         <tr>
-                          <th>Date</th>
-                          <th className="text-right">Open</th>
-                          <th className="text-right">High</th>
-                          <th className="text-right">Low</th>
-                          <th className="text-right">Close</th>
-                          <th className="text-right">Volume</th>
+                          {['formatted_date', 'Open', 'High', 'Low', 'Close', 'Volume'].map((key) => {
+                            const labels = {
+                              formatted_date: 'Date',
+                              Open: 'Open',
+                              High: 'High',
+                              Low: 'Low',
+                              Close: 'Close',
+                              Volume: 'Volume'
+                            };
+                            return (
+                              <th 
+                                key={key}
+                                className={`font-label-caps text-[10px] md:text-xs text-text-muted uppercase border-b border-surface-border pb-2 sticky top-0 bg-surface-subtle z-10 cursor-pointer hover:text-on-surface transition-colors ${key !== 'formatted_date' ? 'text-right' : ''}`}
+                                onClick={() => {
+                                  let direction = 'asc';
+                                  if (historySortConfig.key === key && historySortConfig.direction === 'asc') direction = 'desc';
+                                  setHistorySortConfig({ key, direction });
+                                }}
+                              >
+                                {labels[key]} <span className="opacity-50 text-[10px] ml-1">{historySortConfig.key === key ? (historySortConfig.direction === 'asc' ? '▲' : '▼') : '↕'}</span>
+                              </th>
+                            );
+                          })}
                         </tr>
                       </thead>
                       <tbody>
-                        {[...history].sort((a, b) => new Date(b.formatted_date) - new Date(a.formatted_date)).map((row, idx) => (
-                          <tr key={idx}>
-                            <td className="font-bold">{row.formatted_date}</td>
-                            <td className="text-right font-mono">₹{parseFloat(String(row.Open || 0).replace(/,/g, '')).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
-                            <td className="text-right font-mono" style={{ color: 'var(--success-color)' }}>₹{parseFloat(String(row.High || 0).replace(/,/g, '')).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
-                            <td className="text-right font-mono" style={{ color: 'var(--danger-color)' }}>₹{parseFloat(String(row.Low || 0).replace(/,/g, '')).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
-                            <td className="text-right font-mono">₹{parseFloat(String(row.Close || 0).replace(/,/g, '')).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
-                            <td className="text-right font-mono">{parseInt(String(row.Volume || 0).replace(/,/g, '')).toLocaleString('en-IN')}</td>
+                        {[...history].sort((a, b) => {
+                          const { key, direction } = historySortConfig;
+                          let aVal = a[key];
+                          let bVal = b[key];
+                          
+                          if (key === 'formatted_date') {
+                            aVal = new Date(a.formatted_date).getTime();
+                            bVal = new Date(b.formatted_date).getTime();
+                          } else {
+                            aVal = parseFloat(String(a[key] || 0).replace(/,/g, ''));
+                            bVal = parseFloat(String(b[key] || 0).replace(/,/g, ''));
+                          }
+                          
+                          if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+                          if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+                          return 0;
+                        }).map((row, idx) => (
+                          <tr key={idx} className="group hover:bg-surface-container transition-colors">
+                            <td className="font-data-tabular text-sm py-2 border-b border-surface-border/50 font-bold">{row.formatted_date}</td>
+                            <td className="font-data-tabular text-sm py-2 border-b border-surface-border/50 text-right">₹{parseFloat(String(row.Open || 0).replace(/,/g, '')).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+                            <td className="font-data-tabular text-sm py-2 border-b border-surface-border/50 text-right text-bullish">₹{parseFloat(String(row.High || 0).replace(/,/g, '')).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+                            <td className="font-data-tabular text-sm py-2 border-b border-surface-border/50 text-right text-bearish">₹{parseFloat(String(row.Low || 0).replace(/,/g, '')).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+                            <td className="font-data-tabular text-sm py-2 border-b border-surface-border/50 text-right text-primary">₹{parseFloat(String(row.Close || 0).replace(/,/g, '')).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+                            <td className="font-data-tabular text-sm py-2 border-b border-surface-border/50 text-right">{parseInt(String(row.Volume || 0).replace(/,/g, '')).toLocaleString('en-IN')}</td>
                           </tr>
                         ))}
                         {history.length === 0 && (
                           <tr>
-                            <td colSpan="6" className="text-center p-8 text-secondary">
+                            <td colSpan="6" className="text-center p-8 text-text-muted font-body-md">
                               No historical data available.
                             </td>
                           </tr>
@@ -852,29 +890,29 @@ function App() {
 
               {/* Announcements Tab */}
               {activeTab === 'announcements' && (
-                <div className="announcements-container">
+                <div className="flex flex-col gap-4">
                   {announcements.map((ann, idx) => (
-                    <div key={idx} className="announcement-card glass-panel">
-                      <div className="announcement-header">
-                        <span className="announcement-title">{ann.desc}</span>
-                        <span className="announcement-date">
-                          <Calendar size={12} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                    <div key={idx} className="bg-surface-subtle border border-surface-border p-5 rounded-xl flex flex-col gap-2 transition-colors hover:border-surface-border-hover">
+                      <div className="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-1 pb-2 border-b border-surface-border/50">
+                        <span className="font-headline-md text-base text-on-surface leading-snug">{ann.desc}</span>
+                        <span className="font-data-tabular text-xs text-text-muted whitespace-nowrap flex items-center bg-surface-container px-2 py-1 rounded-md">
+                          <Calendar size={12} className="mr-1.5 text-primary" />
                           {ann.sort_date}
                         </span>
                       </div>
-                      <p className="announcement-details">{ann.desc_details}</p>
+                      <p className="font-body-md text-sm text-text-muted leading-relaxed whitespace-pre-wrap">{ann.desc_details}</p>
                       {ann.attachment && (
-                        <a href={ann.attachment} target="_blank" rel="noopener noreferrer" className="attachment-btn">
+                        <a href={ann.attachment} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-label-caps text-xs text-primary hover:text-primary/80 mt-3 bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-full transition-colors w-fit border border-primary/20">
                           <Award size={14} /> View NSE Official Circular
                         </a>
                       )}
                     </div>
                   ))}
                   {announcements.length === 0 && (
-                    <div className="empty-state glass-panel">
-                      <FileText size={48} className="empty-icon" />
-                      <span className="empty-title">No Announcements Logged</span>
-                      <p>Corporate announcements will appear here when fetched from the exchange.</p>
+                    <div className="flex flex-col items-center justify-center p-12 text-center h-[300px] bg-surface-subtle border border-surface-border rounded-xl">
+                      <FileText size={48} className="text-surface-border mb-4 opacity-50" />
+                      <span className="font-headline-md text-xl text-on-surface mb-2">No Announcements Logged</span>
+                      <p className="font-body-md text-text-muted">Corporate announcements will appear here when fetched from the exchange.</p>
                     </div>
                   )}
                 </div>
@@ -882,13 +920,13 @@ function App() {
 
               {/* News Tab */}
               {activeTab === 'news' && (
-                <div className="news-grid">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {news.map((item, idx) => (
-                    <a key={idx} href={item.link} target="_blank" rel="noopener noreferrer" className="news-card glass-panel">
-                      <h4 className="news-headline">{item.title}</h4>
-                      <div className="news-meta">
-                        <span className="news-source">
-                          <Globe size={11} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                    <a key={idx} href={item.link} target="_blank" rel="noopener noreferrer" className="bg-surface-subtle border border-surface-border p-5 rounded-xl flex flex-col justify-between gap-4 hover:border-primary/50 hover:-translate-y-1 transition-all duration-300 group shadow-sm hover:shadow-primary/5">
+                      <h4 className="font-headline-md text-sm text-on-surface leading-snug group-hover:text-primary transition-colors">{item.title}</h4>
+                      <div className="flex justify-between items-center font-label-caps text-[10px] text-text-muted border-t border-surface-border/50 pt-3">
+                        <span className="flex items-center text-primary/80">
+                          <Globe size={11} className="mr-1" />
                           {item.source}
                         </span>
                         <span>{new Date(item.pubDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
@@ -896,10 +934,10 @@ function App() {
                     </a>
                   ))}
                   {news.length === 0 && (
-                    <div className="empty-state glass-panel" style={{ gridColumn: 'span 3' }}>
-                      <Newspaper size={48} className="empty-icon" />
-                      <span className="empty-title">No News Available</span>
-                      <p>Could not fetch Google News feed articles at this moment.</p>
+                    <div className="flex flex-col items-center justify-center p-12 text-center h-[300px] bg-surface-subtle border border-surface-border rounded-xl col-span-1 md:col-span-2 lg:col-span-3">
+                      <Newspaper size={48} className="text-surface-border mb-4 opacity-50" />
+                      <span className="font-headline-md text-xl text-on-surface mb-2">No News Available</span>
+                      <p className="font-body-md text-text-muted">Could not fetch Google News feed articles at this moment.</p>
                     </div>
                   )}
                 </div>
@@ -907,10 +945,10 @@ function App() {
             </section>
           </>
         ) : !loadingStocks && !loadingDetails ? (
-          <div className="empty-state">
-            <ChartLine size={64} className="empty-icon" style={{ opacity: 0.3 }} />
-            <span className="empty-title">Select a Stock Ticker to Begin</span>
-            <p>Choose any stock or index symbol from the sidebar to inspect its history, charts, filings, and live news.</p>
+          <div className="flex flex-col items-center justify-center p-12 text-center h-[400px] mt-10">
+            <ChartLine size={64} className="text-surface-border mb-4 opacity-30" />
+            <span className="font-headline-md text-xl text-on-surface mb-2">Select a Stock Ticker to Begin</span>
+            <p className="font-body-md text-text-muted max-w-md">Choose any stock or index symbol from the sidebar to inspect its history, charts, filings, and live news.</p>
           </div>
         ) : null}
       </main>
