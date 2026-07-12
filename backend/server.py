@@ -45,6 +45,8 @@ root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+from auth import router as auth_router
+
 app = FastAPI(title="NSE Market Data Dashboard API")
 
 @app.middleware("http")
@@ -83,6 +85,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(auth_router, prefix="/api")
 
 def get_db_connection(db_name: str) -> sqlite3.Connection:
     conn = sqlite3.connect(db_name)

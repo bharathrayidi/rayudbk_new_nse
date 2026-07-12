@@ -1,4 +1,6 @@
 import React, { useState, useEffect, Component } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -136,6 +138,14 @@ function useSortableTable(data) {
 
 // ─── Main App ────────────────────────────────────────────────────────────────
 function App() {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   // Navigation & list states
   const [stocksList, setStocksList] = useState([]);
   const [filteredStocks, setFilteredStocks] = useState([]);
@@ -307,13 +317,16 @@ function App() {
   const { processedData, handleSort, sortConfig, handleFilterChange, filters } = useSortableTable(getTableData());
 
   const renderSortHeader = (label, key) => (
-    <th className="sortable-th text-right" onClick={() => handleSort(key)}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-        <span>{label} {sortConfig.key === key ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '↕'}</span>
+    <th className="p-4 font-label-caps text-label-caps text-text-muted border-b border-surface-border text-right cursor-pointer hover:text-on-surface transition-colors" onClick={() => handleSort(key)}>
+      <div className="flex flex-col items-end gap-1">
+        <span className="flex items-center gap-1">
+          {label} 
+          <span className="text-[10px] opacity-50">{sortConfig.key === key ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '↕'}</span>
+        </span>
         <input 
           type="text" 
-          className="filter-input" 
-          placeholder={`Filter ${label}...`}
+          className="w-24 bg-surface-dim border border-surface-border text-on-surface font-body-md text-[10px] px-2 py-1 rounded focus:border-primary outline-none" 
+          placeholder={`Filter...`}
           value={filters[key] || ''}
           onClick={(e) => e.stopPropagation()}
           onChange={(e) => handleFilterChange(key, e.target.value)}
@@ -323,13 +336,16 @@ function App() {
   );
 
   const renderSortHeaderLeft = (label, key) => (
-    <th className="sortable-th" onClick={() => handleSort(key)}>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span>{label} {sortConfig.key === key ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '↕'}</span>
+    <th className="p-4 font-label-caps text-label-caps text-text-muted border-b border-surface-border text-left cursor-pointer hover:text-on-surface transition-colors" onClick={() => handleSort(key)}>
+      <div className="flex flex-col items-start gap-1">
+        <span className="flex items-center gap-1">
+          {label} 
+          <span className="text-[10px] opacity-50">{sortConfig.key === key ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '↕'}</span>
+        </span>
         <input 
           type="text" 
-          className="filter-input" 
-          placeholder={`Filter ${label}...`}
+          className="w-24 bg-surface-dim border border-surface-border text-on-surface font-body-md text-[10px] px-2 py-1 rounded focus:border-primary outline-none" 
+          placeholder={`Filter...`}
           value={filters[key] || ''}
           onClick={(e) => e.stopPropagation()}
           onChange={(e) => handleFilterChange(key, e.target.value)}
@@ -340,29 +356,28 @@ function App() {
 
   if (backendOffline) {
     return (
-      <div className="app-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '24px', padding: '48px', textAlign: 'center' }}>
-        <WifiOff size={64} style={{ color: '#f87171', opacity: 0.7 }} />
-        <h2 style={{ fontSize: '24px', fontWeight: 700 }}>Backend Not Running</h2>
-        <p style={{ color: 'var(--text-secondary)', maxWidth: '480px', lineHeight: 1.6 }}>
-          The FastAPI backend at <code style={{ color: 'var(--accent-color)', background: 'rgba(88,166,255,0.1)', padding: '2px 6px', borderRadius: '4px' }}>{API_BASE}</code> is not reachable.
+      <div className="min-h-screen bg-background text-on-surface flex flex-col items-center justify-center p-8 text-center gap-6">
+        <span className="material-symbols-outlined text-[64px] text-bearish opacity-70">wifi_off</span>
+        <h2 className="font-headline-md text-2xl font-bold">Backend Not Running</h2>
+        <p className="text-text-muted max-w-md leading-relaxed font-body-md">
+          The FastAPI backend at <code className="bg-primary/10 text-primary px-2 py-0.5 rounded text-sm">{API_BASE}</code> is not reachable.
           <br /><br />
           Start it with:<br />
-          <code style={{ color: '#4ade80', fontSize: '13px' }}>python -m uvicorn backend.server:app --port 8000 --reload</code>
+          <code className="text-bullish text-sm mt-2 block bg-surface-dim border border-surface-border p-2 rounded">python -m uvicorn backend.server:app --port 8000 --reload</code>
         </p>
         <button
-          className="shortcut-btn"
+          className="flex items-center gap-2 px-6 py-3 bg-primary-container text-on-primary-container rounded-lg font-body-md font-bold hover:brightness-110 transition-all mt-4"
           onClick={loadInitialData}
-          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 28px', fontSize: '14px', width: 'auto' }}
         >
-          <RotateCcw size={16} /> Retry Connection
+          <span className="material-symbols-outlined text-sm">refresh</span>
+          Retry Connection
         </button>
       </div>
     );
   }
 
   return (
-    <div className="app-container">
-      {/* ── SIDEBAR ── */}
+    <div className="bg-background text-on-surface font-body-md min-h-screen flex flex-col">
       {/* ── SIDEBAR ── */}
       <Sidebar
         activeShortcut={activeShortcut}
@@ -382,25 +397,37 @@ function App() {
       />
 
       {/* ── MAIN CONTENT ── */}
-      <main className="main-content">
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', background: 'rgba(20, 30, 45, 0.5)', padding: '12px 24px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-             <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
-               <Menu size={20} />
-             </button>
-             <div style={{ fontSize: '13px', color: '#8b949e', wordBreak: 'break-all' }}>
-               Backend Status: <span style={{ color: backendOffline ? '#f87171' : '#4ade80', fontWeight: 'bold' }}>{backendOffline ? 'Offline' : 'Connected'}</span> 
-               <span style={{ margin: '0 12px', opacity: 0.3 }}>|</span> 
-               Endpoint: <code style={{ color: '#58a6ff', background: 'rgba(88,166,255,0.1)', padding: '2px 6px', borderRadius: '4px' }}>{API_BASE}</code>
-             </div>
-           </div>
-           <button 
-             onClick={loadInitialData} 
-             style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--accent-color, #58a6ff)', border: 'none', color: '#fff', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', whiteSpace: 'nowrap' }}
-           >
-             <RotateCcw size={14} /> Reconnect / Refresh
-           </button>
-        </div>
+      <main className="lg:ml-64 flex-1 flex flex-col p-4 md:p-8 h-screen overflow-y-auto overflow-x-hidden">
+        
+        {/* Top App Bar / System Status Header */}
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 md:p-6 bg-surface-subtle border border-surface-border rounded-xl mb-6 flex-shrink-0">
+          <div className="flex items-center gap-3 flex-wrap">
+            <button className="lg:hidden text-on-surface hover:text-primary flex items-center justify-center p-1" onClick={() => setIsSidebarOpen(true)}>
+              <span className="material-symbols-outlined">menu</span>
+            </button>
+            <span className={`status-dot ${backendOffline ? 'bg-bearish' : 'bg-bullish animate-pulse'}`}></span>
+            <span className="font-label-caps text-[10px] md:text-label-caps text-on-surface">Backend Status: <span className={backendOffline ? 'text-bearish' : 'text-bullish'}>{backendOffline ? 'Offline' : 'Connected'}</span></span>
+            <span className="text-surface-border hidden md:inline">|</span>
+            <span className="font-label-caps text-[10px] md:text-label-caps text-text-muted hidden md:inline">Endpoint:</span>
+            <code className="bg-surface-container px-2 py-0.5 rounded font-data-tabular text-[10px] md:text-[11px] text-primary truncate max-w-[200px] md:max-w-none">{API_BASE}</code>
+          </div>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={loadInitialData}
+              className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-primary-container text-on-primary-container rounded font-label-caps text-[10px] md:text-label-caps hover:brightness-110 active:scale-95 transition-all w-full md:w-auto justify-center"
+            >
+              <span className="material-symbols-outlined text-sm">refresh</span>
+              Reconnect / Refresh
+            </button>
+            <button 
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-bearish/10 text-bearish border border-bearish/20 rounded font-label-caps text-[10px] md:text-label-caps hover:bg-bearish hover:text-on-error-container active:scale-95 transition-all w-full md:w-auto justify-center"
+            >
+              <span className="material-symbols-outlined text-sm">logout</span>
+              Logout
+            </button>
+          </div>
+        </header>
         {activeMainView === 'screener' ? (
           <AdvancedScreener onSelectStock={(sym) => { setSelectedStock(sym); setActiveMainView('details'); }} />
         ) : activeMainView === 'macro' ? (
@@ -408,20 +435,23 @@ function App() {
         ) : activeMainView === 'system_log' ? (
           <IngestionLog />
         ) : activeMainView === 'gainers_table' || activeMainView === 'active_table' || activeMainView === 'ai_table' || activeMainView === 'ai_performance' ? (
-          <div className="data-table-container glass-panel">
-            <div className="chart-header">
-              <span className="chart-title">
+          <div className="glass-panel p-4 md:p-6 rounded-xl w-full border border-surface-border flex-1 flex flex-col min-h-0">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 md:mb-6">
+              <h2 className="font-headline-md text-xl md:text-headline-md text-on-surface flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary">
+                  {activeMainView === 'ai_table' || activeMainView === 'ai_performance' ? 'psychology' : 'trending_up'}
+                </span>
                 {activeMainView === 'gainers_table' ? 'Top Volume Gainers' : 
                  activeMainView === 'active_table' ? 'Most Active Equities' : 
                  activeMainView === 'ai_performance' ? 'AI Predictions Evaluation' : 'Top AI Picks For Tomorrow'}
-              </span>
-              <span className="stock-type-tag">
+              </h2>
+              <span className="bg-primary/10 text-primary px-3 py-1 rounded-full font-label-caps text-[10px] tracking-wider uppercase border border-primary/20 w-max">
                 {activeMainView === 'ai_table' ? 'Machine Learning Predictions' : 
                  activeMainView === 'ai_performance' ? 'Backtesting & Tracking' : 'Market Snapshot'}
               </span>
             </div>
-            <div className="table-wrapper">
-              <table className="nse-data-table">
+            <div className="overflow-x-auto flex-1 custom-scrollbar">
+              <table className="w-full text-left border-collapse min-w-[800px] md:min-w-[1000px]">
 
                 <thead>
                   {activeMainView === 'ai_performance' ? (

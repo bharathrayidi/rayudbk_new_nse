@@ -10,3 +10,6 @@ matplotlib
 seaborn
 nselib
 nsepython
+passlib
+bcrypt
+pyjwt

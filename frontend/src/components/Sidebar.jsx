@@ -1,5 +1,4 @@
 import React from 'react';
-import { ChartLine, TrendingUp, Activity, Award, ChartColumnIncreasing, Search, Star, ChevronRight, Filter, Globe, Database, X } from 'lucide-react';
 
 export default function Sidebar({
   activeShortcut,
@@ -17,198 +16,162 @@ export default function Sidebar({
   isOpen,
   setIsOpen
 }) {
+  
+  const handleMenuClick = (shortcut, view) => {
+    const isActive = activeShortcut === shortcut;
+    setActiveShortcut(isActive ? 'all' : shortcut);
+    setActiveMainView(isActive ? 'details' : view);
+    setIsOpen?.(false);
+  };
+
   return (
-    <aside className={`sidebar glass-panel ${isOpen ? 'open' : ''}`}>
-      <div className="brand-section" style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <ChartLine size={28} className="brand-icon" />
-          <h1 className="brand-title">NSE Analytics</h1>
+    <aside className={`fixed left-0 top-0 h-screen bg-surface-dim border-r border-surface-border flex flex-col pt-4 w-64 z-40 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      
+      <div className="px-6 mb-6 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>analytics</span>
+          <div>
+            <h1 className="font-headline-md text-headline-md text-on-surface tracking-tight">NSE Analytics</h1>
+            <p className="font-label-caps text-[10px] text-text-muted">Institutional Grade</p>
+          </div>
         </div>
-        <button className="mobile-close-btn" onClick={() => setIsOpen?.(false)}>
-          <X size={24} />
+        <button className="lg:hidden text-text-muted hover:text-on-surface" onClick={() => setIsOpen?.(false)}>
+          <span className="material-symbols-outlined">close</span>
         </button>
       </div>
 
-      {/* Shortcut Filters */}
-      <div className="shortcuts-panel">
-        <div className="stock-list-title">Market Shortcuts</div>
-        <button
-          className={`shortcut-btn ${activeShortcut === 'gainers' ? 'active' : ''}`}
-          onClick={() => {
-            const isActive = activeShortcut === 'gainers';
-            setActiveShortcut(isActive ? 'all' : 'gainers');
-            setActiveMainView(isActive ? 'details' : 'gainers_table');
-            setIsOpen?.(false);
-          }}
-          style={{
-            borderColor: activeShortcut === 'gainers' ? 'var(--success-color)' : '',
-            background: activeShortcut === 'gainers' ? 'rgba(74, 222, 128, 0.15)' : ''
-          }}
+      {/* Navigation Links */}
+      <nav className="flex flex-col gap-1 px-2 mb-6">
+        <button 
+          className={`px-4 py-3 flex items-center gap-3 transition-all rounded ${activeShortcut === 'all' && !['screener', 'macro', 'system_log'].includes(activeShortcut) ? 'bg-surface-container-high text-primary border-l-4 border-primary translate-x-1' : 'text-on-surface-variant hover:bg-surface-container'}`}
+          onClick={() => { setActiveShortcut('all'); setActiveMainView('details'); setIsOpen?.(false); }}
         >
-          <TrendingUp size={16} /> Show Volume Gainers
-        </button>
-
-        <button
-          className={`shortcut-btn ${activeShortcut === 'active' ? 'active' : ''}`}
-          onClick={() => {
-            const isActive = activeShortcut === 'active';
-            setActiveShortcut(isActive ? 'all' : 'active');
-            setActiveMainView(isActive ? 'details' : 'active_table');
-            setIsOpen?.(false);
-          }}
-          style={{
-            borderColor: activeShortcut === 'active' ? 'var(--accent-color)' : '',
-            background: activeShortcut === 'active' ? 'rgba(88, 166, 255, 0.15)' : '',
-            color: activeShortcut === 'active' ? 'var(--accent-color)' : '#9ec2ff'
-          }}
-        >
-          <Activity size={16} /> Show Most Active
-        </button>
-
-        <button
-          className={`shortcut-btn ${activeShortcut === 'ai' ? 'active' : ''}`}
-          onClick={() => {
-            const isActive = activeShortcut === 'ai';
-            setActiveShortcut(isActive ? 'all' : 'ai');
-            setActiveMainView(isActive ? 'details' : 'ai_table');
-            setIsOpen?.(false);
-          }}
-          style={{
-            borderColor: activeShortcut === 'ai' ? '#d946ef' : '',
-            background: activeShortcut === 'ai' ? 'rgba(217, 70, 239, 0.15)' : '',
-            color: activeShortcut === 'ai' ? '#d946ef' : '#e879f9',
-            marginTop: '8px'
-          }}
-        >
-          <Award size={16} /> Top AI Picks
-        </button>
-
-        <button
-          className={`shortcut-btn ${activeShortcut === 'ai_perf' ? 'active' : ''}`}
-          onClick={() => {
-            setActiveShortcut('ai_perf');
-            setActiveMainView('ai_performance');
-            setIsOpen?.(false);
-          }}
-          style={{
-            borderColor: activeShortcut === 'ai_perf' ? '#22c55e' : '',
-            background: activeShortcut === 'ai_perf' ? 'rgba(34, 197, 94, 0.15)' : '',
-            color: activeShortcut === 'ai_perf' ? '#22c55e' : '#86efac',
-            marginTop: '8px'
-          }}
-        >
-          <ChartColumnIncreasing size={16} /> AI Performance
+          <span className="material-symbols-outlined">dashboard</span>
+          <span className="font-label-caps text-label-caps">Dashboard</span>
         </button>
         
-        <div className="stock-list-title" style={{ marginTop: '24px' }}>Advanced Terminals</div>
-        <button
-          className={`shortcut-btn ${activeShortcut === 'screener' ? 'active' : ''}`}
-          onClick={() => {
-            setActiveShortcut('screener');
-            setActiveMainView('screener');
-            setIsOpen?.(false);
-          }}
-          style={{
-            borderColor: activeShortcut === 'screener' ? '#38bdf8' : '',
-            background: activeShortcut === 'screener' ? 'rgba(56, 189, 248, 0.15)' : '',
-            color: activeShortcut === 'screener' ? '#38bdf8' : '#7dd3fc',
-            marginTop: '8px'
-          }}
+        <button 
+          className={`px-4 py-3 flex items-center gap-3 transition-all rounded ${activeShortcut === 'ai' ? 'bg-surface-container-high text-primary border-l-4 border-primary translate-x-1' : 'text-on-surface-variant hover:bg-surface-container'}`}
+          onClick={() => handleMenuClick('ai', 'ai_table')}
         >
-          <Filter size={16} /> Master Screener
+          <span className="material-symbols-outlined">auto_awesome</span>
+          <span className="font-label-caps text-label-caps">Top AI Picks</span>
+        </button>
+        
+        <button 
+          className={`px-4 py-3 flex items-center gap-3 transition-all rounded ${activeShortcut === 'ai_perf' ? 'bg-surface-container-high text-primary border-l-4 border-primary translate-x-1' : 'text-on-surface-variant hover:bg-surface-container'}`}
+          onClick={() => handleMenuClick('ai_perf', 'ai_performance')}
+        >
+          <span className="material-symbols-outlined">query_stats</span>
+          <span className="font-label-caps text-label-caps">AI Performance</span>
+        </button>
+        
+        <button 
+          className={`px-4 py-3 flex items-center gap-3 transition-all rounded ${activeShortcut === 'gainers' ? 'bg-surface-container-high text-primary border-l-4 border-primary translate-x-1' : 'text-on-surface-variant hover:bg-surface-container'}`}
+          onClick={() => handleMenuClick('gainers', 'gainers_table')}
+        >
+          <span className="material-symbols-outlined">trending_up</span>
+          <span className="font-label-caps text-label-caps">Volume Gainers</span>
         </button>
 
-        <button
-          className={`shortcut-btn ${activeShortcut === 'macro' ? 'active' : ''}`}
-          onClick={() => {
-            setActiveShortcut('macro');
-            setActiveMainView('macro');
-            setIsOpen?.(false);
-          }}
-          style={{
-            borderColor: activeShortcut === 'macro' ? '#818cf8' : '',
-            background: activeShortcut === 'macro' ? 'rgba(129, 140, 248, 0.15)' : '',
-            color: activeShortcut === 'macro' ? '#818cf8' : '#a5b4fc',
-            marginTop: '8px'
-          }}
+        <button 
+          className={`px-4 py-3 flex items-center gap-3 transition-all rounded ${activeShortcut === 'active' ? 'bg-surface-container-high text-primary border-l-4 border-primary translate-x-1' : 'text-on-surface-variant hover:bg-surface-container'}`}
+          onClick={() => handleMenuClick('active', 'active_table')}
         >
-          <Globe size={16} /> Macro & FII Data
+          <span className="material-symbols-outlined">moving</span>
+          <span className="font-label-caps text-label-caps">Most Active</span>
         </button>
+      </nav>
 
-        <button
-          className={`shortcut-btn ${activeShortcut === 'system_log' ? 'active' : ''}`}
-          onClick={() => {
-            setActiveShortcut('system_log');
-            setActiveMainView('system_log');
-            setIsOpen?.(false);
-          }}
-          style={{
-            borderColor: activeShortcut === 'system_log' ? '#10b981' : '',
-            background: activeShortcut === 'system_log' ? 'rgba(16, 185, 129, 0.15)' : '',
-            color: activeShortcut === 'system_log' ? '#10b981' : '#6ee7b7',
-            marginTop: '8px'
-          }}
+      {/* Advanced Tools */}
+      <div className="px-6 mb-2">
+        <span className="font-label-caps text-[10px] text-text-muted uppercase tracking-wider">Advanced Tools</span>
+      </div>
+      <nav className="flex flex-col gap-1 px-2 mb-6 border-b border-surface-border pb-6">
+        <button 
+          className={`px-4 py-2 flex items-center gap-3 transition-all rounded ${activeShortcut === 'screener' ? 'text-primary bg-primary/10' : 'text-on-surface-variant hover:bg-surface-container'}`}
+          onClick={() => handleMenuClick('screener', 'screener')}
         >
-          <Database size={16} /> System Ingestion Log
+          <span className="material-symbols-outlined text-sm">filter_alt</span>
+          <span className="font-label-caps text-xs">Master Screener</span>
         </button>
-      </div>
+        <button 
+          className={`px-4 py-2 flex items-center gap-3 transition-all rounded ${activeShortcut === 'macro' ? 'text-primary bg-primary/10' : 'text-on-surface-variant hover:bg-surface-container'}`}
+          onClick={() => handleMenuClick('macro', 'macro')}
+        >
+          <span className="material-symbols-outlined text-sm">language</span>
+          <span className="font-label-caps text-xs">Macro & FII Data</span>
+        </button>
+        <button 
+          className={`px-4 py-2 flex items-center gap-3 transition-all rounded ${activeShortcut === 'system_log' ? 'text-primary bg-primary/10' : 'text-on-surface-variant hover:bg-surface-container'}`}
+          onClick={() => handleMenuClick('system_log', 'system_log')}
+        >
+          <span className="material-symbols-outlined text-sm">terminal</span>
+          <span className="font-label-caps text-xs">System Logs</span>
+        </button>
+      </nav>
 
-      {/* Search */}
-      <div className="search-box-container">
-        <Search size={18} className="search-icon" />
-        <input
-          type="text"
-          className="search-input"
-          placeholder="Search stock or index..."
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-        />
-      </div>
-
-      <div className="stock-list-title">
-        {activeShortcut === 'gainers' ? 'Volume Gainers' : activeShortcut === 'active' ? 'Most Active' : activeShortcut === 'ai' ? 'Top AI Picks' : 'All Symbols'} ({filteredStocks.length})
-      </div>
-
-      {loadingStocks ? (
-        <div className="loader-center">
-          <div className="loader-spinner" />
+      {/* Search & Stock List */}
+      <div className="px-4 flex-grow flex flex-col min-h-0">
+        <div className="relative mb-4">
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+          <input
+            type="text"
+            className="w-full bg-surface-container border border-surface-border text-on-surface font-body-md text-sm px-9 py-2 rounded focus:border-primary outline-none transition-all placeholder:text-outline/50"
+            placeholder="Search symbol..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
         </div>
-      ) : (
-        <ul className="stock-list">
-          {filteredStocks.map(symbol => (
-            <li key={symbol}>
-              <button
-                className={`stock-item ${selectedStock === symbol ? 'active' : ''}`}
-                onClick={() => {
-                  setSelectedStock(symbol);
-                  setActiveMainView('details');
-                  setIsOpen?.(false);
-                }}
-              >
-                <div className="stock-item-left">
-                  <button 
-                    className={`star-btn ${watchlist.includes(symbol) ? 'active' : ''}`} 
-                    onClick={(e) => toggleWatchlist(symbol, e)}
-                    title={watchlist.includes(symbol) ? "Remove from Watchlist" : "Add to Watchlist"}
-                  >
-                    <Star size={14} fill={watchlist.includes(symbol) ? "currentColor" : "none"} />
-                  </button>
-                  <span>{symbol}</span>
-                </div>
-                {isIndex(symbol)
-                  ? <span className="badge-index">Index</span>
-                  : <ChevronRight size={14} className="chevron-icon" />
-                }
-              </button>
-            </li>
-          ))}
-          {filteredStocks.length === 0 && (
-            <div className="empty-state">
-              <span className="empty-title" style={{ fontSize: '13px' }}>No matches found</span>
-            </div>
-          )}
-        </ul>
-      )}
+
+        <div className="flex justify-between items-center mb-2 px-2">
+          <span className="font-label-caps text-[10px] text-text-muted uppercase tracking-wider">
+             {activeShortcut === 'gainers' ? 'Gainers' : activeShortcut === 'active' ? 'Most Active' : activeShortcut === 'ai' ? 'AI Picks' : 'Symbols'} ({filteredStocks.length})
+          </span>
+        </div>
+
+        {loadingStocks ? (
+          <div className="flex justify-center py-4">
+            <span className="material-symbols-outlined animate-spin text-primary">sync</span>
+          </div>
+        ) : (
+          <ul className="flex-1 overflow-y-auto overflow-x-hidden space-y-1 pr-1 custom-scrollbar pb-4">
+            {filteredStocks.map(symbol => (
+              <li key={symbol}>
+                <button
+                  className={`w-full text-left px-3 py-2 rounded flex justify-between items-center group transition-colors ${selectedStock === symbol ? 'bg-surface-container border-l-2 border-primary text-primary' : 'hover:bg-surface-subtle text-on-surface-variant'}`}
+                  onClick={() => {
+                    setSelectedStock(symbol);
+                    setActiveMainView('details');
+                    setIsOpen?.(false);
+                  }}
+                >
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <span 
+                      className={`material-symbols-outlined text-sm cursor-pointer ${watchlist.includes(symbol) ? 'text-tertiary' : 'text-outline hover:text-on-surface'}`}
+                      style={{ fontVariationSettings: watchlist.includes(symbol) ? "'FILL' 1" : "'FILL' 0" }}
+                      onClick={(e) => { e.stopPropagation(); toggleWatchlist(symbol, e); }}
+                    >
+                      star
+                    </span>
+                    <span className="font-data-tabular text-xs font-bold truncate">{symbol}</span>
+                  </div>
+                  {isIndex(symbol) ? (
+                    <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded uppercase font-label-caps">Idx</span>
+                  ) : (
+                    <span className="material-symbols-outlined text-[14px] opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+                  )}
+                </button>
+              </li>
+            ))}
+            {filteredStocks.length === 0 && (
+              <div className="text-center py-4">
+                <span className="font-body-md text-xs text-outline">No matches found</span>
+              </div>
+            )}
+          </ul>
+        )}
+      </div>
     </aside>
   );
 }
