@@ -1066,4 +1066,18 @@ body {
   .brand-title {
     font-size: 18px;
   }
+
+  /* Responsive Data Table */
+  .nse-data-table {
+    font-size: 12px;
+  }
+  
+  .nse-data-table th {
+    padding: 10px 8px;
+    font-size: 10px;
+  }
+  
+  .nse-data-table td {
+    padding: 10px 8px;
+  }
 }
