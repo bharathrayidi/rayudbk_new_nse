@@ -25,7 +25,8 @@ import {
   RotateCcw,
   ChartColumnIncreasing,
   LoaderCircle,
-  Star
+  Star,
+  Menu
 } from 'lucide-react';
 import { LineChart, Line, XAxis as RechartsXAxis, YAxis as RechartsYAxis, Tooltip as RechartsTooltip, ResponsiveContainer as RechartsContainer, BarChart, Bar, Cell } from 'recharts';
 import Sidebar from './components/Sidebar';
@@ -145,6 +146,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeShortcut, setActiveShortcut] = useState('ai');
   const [activeMainView, setActiveMainView] = useState('ai_table'); // 'details' | 'gainers_table' | 'active_table' | 'ai_table' | 'ai_performance'
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   // AI Performance State
   const [aiPerformance, setAiPerformance] = useState([]);
@@ -375,19 +377,26 @@ function App() {
         watchlist={watchlist}
         toggleWatchlist={toggleWatchlist}
         isIndex={isIndex}
+        isOpen={isSidebarOpen}
+        setIsOpen={setIsSidebarOpen}
       />
 
       {/* ── MAIN CONTENT ── */}
       <main className="main-content">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', background: 'rgba(20, 30, 45, 0.5)', padding: '12px 24px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-           <div style={{ fontSize: '13px', color: '#8b949e' }}>
-             Backend Status: <span style={{ color: backendOffline ? '#f87171' : '#4ade80', fontWeight: 'bold' }}>{backendOffline ? 'Offline' : 'Connected'}</span> 
-             <span style={{ margin: '0 12px', opacity: 0.3 }}>|</span> 
-             Endpoint: <code style={{ color: '#58a6ff', background: 'rgba(88,166,255,0.1)', padding: '2px 6px', borderRadius: '4px' }}>{API_BASE}</code>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', background: 'rgba(20, 30, 45, 0.5)', padding: '12px 24px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+             <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+               <Menu size={20} />
+             </button>
+             <div style={{ fontSize: '13px', color: '#8b949e', wordBreak: 'break-all' }}>
+               Backend Status: <span style={{ color: backendOffline ? '#f87171' : '#4ade80', fontWeight: 'bold' }}>{backendOffline ? 'Offline' : 'Connected'}</span> 
+               <span style={{ margin: '0 12px', opacity: 0.3 }}>|</span> 
+               Endpoint: <code style={{ color: '#58a6ff', background: 'rgba(88,166,255,0.1)', padding: '2px 6px', borderRadius: '4px' }}>{API_BASE}</code>
+             </div>
            </div>
            <button 
              onClick={loadInitialData} 
-             style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--accent-color, #58a6ff)', border: 'none', color: '#fff', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600' }}
+             style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--accent-color, #58a6ff)', border: 'none', color: '#fff', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', whiteSpace: 'nowrap' }}
            >
              <RotateCcw size={14} /> Reconnect / Refresh
            </button>

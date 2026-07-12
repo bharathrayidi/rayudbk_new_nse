@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChartLine, TrendingUp, Activity, Award, ChartColumnIncreasing, Search, Star, ChevronRight, Filter, Globe, Database } from 'lucide-react';
+import { ChartLine, TrendingUp, Activity, Award, ChartColumnIncreasing, Search, Star, ChevronRight, Filter, Globe, Database, X } from 'lucide-react';
 
 export default function Sidebar({
   activeShortcut,
@@ -13,13 +13,20 @@ export default function Sidebar({
   setSelectedStock,
   watchlist,
   toggleWatchlist,
-  isIndex
+  isIndex,
+  isOpen,
+  setIsOpen
 }) {
   return (
-    <aside className="sidebar glass-panel">
-      <div className="brand-section">
-        <ChartLine size={28} className="brand-icon" />
-        <h1 className="brand-title">NSE Analytics</h1>
+    <aside className={`sidebar glass-panel ${isOpen ? 'open' : ''}`}>
+      <div className="brand-section" style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <ChartLine size={28} className="brand-icon" />
+          <h1 className="brand-title">NSE Analytics</h1>
+        </div>
+        <button className="mobile-close-btn" onClick={() => setIsOpen?.(false)}>
+          <X size={24} />
+        </button>
       </div>
 
       {/* Shortcut Filters */}
@@ -31,6 +38,7 @@ export default function Sidebar({
             const isActive = activeShortcut === 'gainers';
             setActiveShortcut(isActive ? 'all' : 'gainers');
             setActiveMainView(isActive ? 'details' : 'gainers_table');
+            setIsOpen?.(false);
           }}
           style={{
             borderColor: activeShortcut === 'gainers' ? 'var(--success-color)' : '',
@@ -46,6 +54,7 @@ export default function Sidebar({
             const isActive = activeShortcut === 'active';
             setActiveShortcut(isActive ? 'all' : 'active');
             setActiveMainView(isActive ? 'details' : 'active_table');
+            setIsOpen?.(false);
           }}
           style={{
             borderColor: activeShortcut === 'active' ? 'var(--accent-color)' : '',
@@ -62,6 +71,7 @@ export default function Sidebar({
             const isActive = activeShortcut === 'ai';
             setActiveShortcut(isActive ? 'all' : 'ai');
             setActiveMainView(isActive ? 'details' : 'ai_table');
+            setIsOpen?.(false);
           }}
           style={{
             borderColor: activeShortcut === 'ai' ? '#d946ef' : '',
@@ -78,6 +88,7 @@ export default function Sidebar({
           onClick={() => {
             setActiveShortcut('ai_perf');
             setActiveMainView('ai_performance');
+            setIsOpen?.(false);
           }}
           style={{
             borderColor: activeShortcut === 'ai_perf' ? '#22c55e' : '',
@@ -95,6 +106,7 @@ export default function Sidebar({
           onClick={() => {
             setActiveShortcut('screener');
             setActiveMainView('screener');
+            setIsOpen?.(false);
           }}
           style={{
             borderColor: activeShortcut === 'screener' ? '#38bdf8' : '',
@@ -111,6 +123,7 @@ export default function Sidebar({
           onClick={() => {
             setActiveShortcut('macro');
             setActiveMainView('macro');
+            setIsOpen?.(false);
           }}
           style={{
             borderColor: activeShortcut === 'macro' ? '#818cf8' : '',
@@ -127,6 +140,7 @@ export default function Sidebar({
           onClick={() => {
             setActiveShortcut('system_log');
             setActiveMainView('system_log');
+            setIsOpen?.(false);
           }}
           style={{
             borderColor: activeShortcut === 'system_log' ? '#10b981' : '',
@@ -168,6 +182,7 @@ export default function Sidebar({
                 onClick={() => {
                   setSelectedStock(symbol);
                   setActiveMainView('details');
+                  setIsOpen?.(false);
                 }}
               >
                 <div className="stock-item-left">
