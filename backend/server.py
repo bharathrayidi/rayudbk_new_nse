@@ -45,6 +45,26 @@ root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 app = FastAPI(title="NSE Market Data Dashboard API")
 
+@app.get("/")
+def root():
+    return {"message": "NSE Dashboard backend is running. Open the frontend at http://localhost:5180"}
+
+@app.get("/api")
+def api_root():
+    return {
+        "message": "NSE Dashboard API is running",
+        "endpoints": [
+            "/api/stocks",
+            "/api/volume-gainers",
+            "/api/most-active",
+            "/api/stock/{symbol}/metrics",
+            "/api/stock/{symbol}/history",
+            "/api/stock/{symbol}/announcements",
+            "/api/stock/{symbol}/news",
+            "/api/stock/{symbol}/deep-dive"
+        ]
+    }
+
 # Add CORS Middleware to allow requests from React frontend (e.g. port 5173)
 app.add_middleware(
     CORSMiddleware,
@@ -593,23 +613,30 @@ def run_pipeline_bg():
     global pipeline_state
     try:
         script_path = os.path.join(root_dir, "scripts", "scheduler.py")
-        subprocess.run([sys.executable, script_path], cwd=root_dir, check=True)
+        pipeline_state["last_started"] = datetime.now().isoformat()
+        subprocess.Popen(
+            [sys.executable, script_path],
+            cwd=root_dir,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT,
+            start_new_session=True,
+        )
     except Exception as e:
         print(f"Pipeline error: {e}")
-    finally:
         pipeline_state["is_running"] = False
+
 
 @app.post("/api/system/run-pipeline")
 def start_pipeline(background_tasks: BackgroundTasks):
     global pipeline_state
     if pipeline_state["is_running"]:
         return {"status": "Already running"}
-    
+
     pipeline_state["is_running"] = True
     pipeline_state["last_started"] = datetime.now().isoformat()
-    
+
     background_tasks.add_task(run_pipeline_bg)
-    return {"status": "Started pipeline"}
+    return {"status": "Started pipeline", "last_started": pipeline_state["last_started"]}
 
 @app.get("/api/system/pipeline-status")
 def get_pipeline_status():

@@ -23,11 +23,9 @@ time.sleep(3) # Wait for backend to initialize
 
 # Start Frontend
 print("[2/2] Starting Vite frontend on http://localhost:5180 ...")
-# Use shell=True for npm to work correctly on Windows
 frontend_process = subprocess.Popen(
-    ["npm", "run", "dev"],
-    cwd=frontend_dir,
-    shell=True
+    ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5180"],
+    cwd=frontend_dir
 )
 
 time.sleep(2)

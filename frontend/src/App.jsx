@@ -33,7 +33,7 @@ import AdvancedScreener from './components/AdvancedScreener';
 import MacroTerminal from './components/MacroTerminal';
 import IngestionLog from './components/IngestionLog';
 
-export const API_BASE = import.meta.env.DEV ? 'http://localhost:8000/api' : '/api';
+export const API_BASE = '/api';
 
 // ─── Error Boundary ────────────────────────────────────────────────────────────
 class ErrorBoundary extends Component {
@@ -293,29 +293,6 @@ function App() {
     return Math.max(0, Math.min(100, ((ltp - low_52week) / range) * 100));
   };
 
-  // ── Backend Offline Banner ───────────────────────────────────────────────────
-  if (backendOffline) {
-    return (
-      <div className="app-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '24px', padding: '48px', textAlign: 'center' }}>
-        <WifiOff size={64} style={{ color: '#f87171', opacity: 0.7 }} />
-        <h2 style={{ fontSize: '24px', fontWeight: 700 }}>Backend Not Running</h2>
-        <p style={{ color: 'var(--text-secondary)', maxWidth: '480px', lineHeight: 1.6 }}>
-          The FastAPI backend at <code style={{ color: 'var(--accent-color)', background: 'rgba(88,166,255,0.1)', padding: '2px 6px', borderRadius: '4px' }}>{API_BASE}</code> is not reachable.
-          <br /><br />
-          Start it with:<br />
-          <code style={{ color: '#4ade80', fontSize: '13px' }}>python -m uvicorn backend.server:app --port 8000 --reload</code>
-        </p>
-        <button
-          className="shortcut-btn"
-          onClick={loadInitialData}
-          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 28px', fontSize: '14px', width: 'auto' }}
-        >
-          <RotateCcw size={16} /> Retry Connection
-        </button>
-      </div>
-    );
-  }
-
   // ── Main Layout ──────────────────────────────────────────────────────────────
 
   const getTableData = () => {
@@ -358,6 +335,29 @@ function App() {
       </div>
     </th>
   );
+
+  if (backendOffline) {
+    return (
+      <div className="app-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '24px', padding: '48px', textAlign: 'center' }}>
+        <WifiOff size={64} style={{ color: '#f87171', opacity: 0.7 }} />
+        <h2 style={{ fontSize: '24px', fontWeight: 700 }}>Backend Not Running</h2>
+        <p style={{ color: 'var(--text-secondary)', maxWidth: '480px', lineHeight: 1.6 }}>
+          The FastAPI backend at <code style={{ color: 'var(--accent-color)', background: 'rgba(88,166,255,0.1)', padding: '2px 6px', borderRadius: '4px' }}>{API_BASE}</code> is not reachable.
+          <br /><br />
+          Start it with:<br />
+          <code style={{ color: '#4ade80', fontSize: '13px' }}>python -m uvicorn backend.server:app --port 8000 --reload</code>
+        </p>
+        <button
+          className="shortcut-btn"
+          onClick={loadInitialData}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 28px', fontSize: '14px', width: 'auto' }}
+        >
+          <RotateCcw size={16} /> Retry Connection
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="app-container">
       {/* ── SIDEBAR ── */}
