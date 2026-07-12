@@ -33,7 +33,7 @@ import AdvancedScreener from './components/AdvancedScreener';
 import MacroTerminal from './components/MacroTerminal';
 import IngestionLog from './components/IngestionLog';
 
-export const API_BASE = 'https://ominous-system-4wwqp4g5xqjfxpx-8000.app.github.dev';
+export const API_BASE = 'https://rayudbk-nse-backend.onrender.com';
 
 // ─── Error Boundary ────────────────────────────────────────────────────────────
 class ErrorBoundary extends Component {
