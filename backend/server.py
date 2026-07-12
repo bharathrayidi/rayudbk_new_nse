@@ -43,7 +43,17 @@ from ingestion.stock_downloader import download_stock_history, download_announce
 
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 app = FastAPI(title="NSE Market Data Dashboard API")
+
+@app.middleware("http")
+async def rewrite_api_path(request, call_next):
+    path = request.scope.get("path", "")
+    api_prefixes = ["/stocks", "/volume-gainers", "/most-active", "/stock/", "/ai-picks", "/ai-performance", "/market/", "/system/", "/debug/", "/screener", "/macro/"]
+    if any(path.startswith(p) for p in api_prefixes):
+        request.scope["path"] = "/api" + path
+    return await call_next(request)
 
 @app.get("/")
 def root():

@@ -33,7 +33,7 @@ import AdvancedScreener from './components/AdvancedScreener';
 import MacroTerminal from './components/MacroTerminal';
 import IngestionLog from './components/IngestionLog';
 
-export const API_BASE = 'https://rayudbk-nse-backend.onrender.com';
+export const API_BASE = 'https://rayudbk-nse-backend.onrender.com/api';
 
 // ─── Error Boundary ────────────────────────────────────────────────────────────
 class ErrorBoundary extends Component {
@@ -379,6 +379,19 @@ function App() {
 
       {/* ── MAIN CONTENT ── */}
       <main className="main-content">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', background: 'rgba(20, 30, 45, 0.5)', padding: '12px 24px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+           <div style={{ fontSize: '13px', color: '#8b949e' }}>
+             Backend Status: <span style={{ color: backendOffline ? '#f87171' : '#4ade80', fontWeight: 'bold' }}>{backendOffline ? 'Offline' : 'Connected'}</span> 
+             <span style={{ margin: '0 12px', opacity: 0.3 }}>|</span> 
+             Endpoint: <code style={{ color: '#58a6ff', background: 'rgba(88,166,255,0.1)', padding: '2px 6px', borderRadius: '4px' }}>{API_BASE}</code>
+           </div>
+           <button 
+             onClick={loadInitialData} 
+             style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--accent-color, #58a6ff)', border: 'none', color: '#fff', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600' }}
+           >
+             <RotateCcw size={14} /> Reconnect / Refresh
+           </button>
+        </div>
         {activeMainView === 'screener' ? (
           <AdvancedScreener onSelectStock={(sym) => { setSelectedStock(sym); setActiveMainView('details'); }} />
         ) : activeMainView === 'macro' ? (
