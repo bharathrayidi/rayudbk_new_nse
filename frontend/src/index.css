@@ -1030,7 +1030,8 @@ body {
     flex-direction: column;
     padding: 16px;
     height: 100%;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
   
   .metrics-grid {
