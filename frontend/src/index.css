@@ -975,3 +975,95 @@ body {
 .p-8 {
   padding: 32px !important;
 }
+
+/* ========================================================================= */
+/* RESPONSIVE DESIGN (TABLETS & MOBILE)                                      */
+/* ========================================================================= */
+
+@media (max-width: 992px) {
+  .app-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    height: auto;
+    overflow-y: auto;
+  }
+  
+  .sidebar {
+    height: 350px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px;
+  }
+  
+  .main-content {
+    padding: 16px;
+    height: auto;
+    overflow: visible;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .news-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .metric-card {
+    grid-column: span 1 !important;
+  }
+
+  .deep-dive-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .news-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stock-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .price-summary {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .tabs-navigation {
+    flex-wrap: wrap;
+  }
+  
+  .tab-btn {
+    flex: 1 1 45%;
+    justify-content: center;
+    font-size: 13px;
+    padding: 10px 8px;
+  }
+  
+  .hero-title {
+    font-size: 28px;
+  }
+  
+  .brand-title {
+    font-size: 18px;
+  }
+}
