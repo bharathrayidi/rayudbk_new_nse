@@ -1,0 +1,16 @@
+# Ignore large database files
+databases/*.db
+databases/*.db-wal
+databases/*.db-shm
+
+# Ignore cache
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+node_modules/
+
+# Ignore local dev files
+.DS_Store
+*.log
+frontend/dist/
