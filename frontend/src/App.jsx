@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Component } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { QRCodeSVG } from 'qrcode.react';
 import { useAuth } from './context/AuthContext';
 import {
   ResponsiveContainer,
@@ -157,6 +158,7 @@ function App() {
   const [activeShortcut, setActiveShortcut] = useState('ai');
   const [activeMainView, setActiveMainView] = useState('ai_table'); // 'details' | 'gainers_table' | 'active_table' | 'ai_table' | 'ai_performance'
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
   
   // AI Performance State
   const [aiPerformance, setAiPerformance] = useState([]);
@@ -197,6 +199,27 @@ function App() {
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [backendOffline, setBackendOffline] = useState(false);
+
+  // PWA Install Prompt
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+  };
 
   // ── 1. Initial load ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -397,6 +420,7 @@ function App() {
         isIndex={isIndex}
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
+        onOpenQRModal={() => setIsQRModalOpen(true)}
       />
 
       {/* ── MAIN CONTENT ── */}
@@ -415,6 +439,15 @@ function App() {
             <code className="bg-surface-container px-2 py-0.5 rounded font-data-tabular text-[10px] md:text-[11px] text-primary truncate max-w-[200px] md:max-w-none">{API_BASE}</code>
           </div>
           <div className="flex items-center gap-4">
+            {deferredPrompt && (
+              <button 
+                onClick={handleInstallClick}
+                className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-tertiary text-on-primary rounded font-label-caps text-[10px] md:text-label-caps hover:brightness-110 active:scale-95 transition-all w-full md:w-auto justify-center glow-primary"
+              >
+                <span className="material-symbols-outlined text-sm">download</span>
+                Install App
+              </button>
+            )}
             <button 
               onClick={loadInitialData}
               className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-primary-container text-on-primary-container rounded font-label-caps text-[10px] md:text-label-caps hover:brightness-110 active:scale-95 transition-all w-full md:w-auto justify-center"
@@ -952,6 +985,44 @@ function App() {
           </div>
         ) : null}
       </main>
+
+      {/* QR Code Modal (Rendered outside Sidebar bounds) */}
+      {isQRModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
+          <div className="bg-surface-dim border border-surface-border p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center relative z-[101]">
+            <button 
+              onClick={() => setIsQRModalOpen(false)}
+              className="absolute top-4 right-4 text-text-muted hover:text-on-surface transition-colors"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+            
+            <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="material-symbols-outlined text-primary text-2xl">phone_iphone</span>
+            </div>
+            
+            <h2 className="font-display-md text-xl mb-2 text-on-surface">Install on Mobile</h2>
+            
+            <div className="font-body-md text-sm text-text-muted mb-6 space-y-2 text-left bg-surface-container-lowest p-4 rounded-lg border border-surface-border">
+              <p><strong>1.</strong> Scan this QR code.</p>
+              <p><strong>2.</strong> Open the link in Chrome or Safari.</p>
+              <p><strong>3. Android:</strong> Tap "Install App" when prompted.</p>
+              <p><strong>4. iOS (iPhone):</strong> Tap the <strong>Share</strong> button at the bottom of Safari, then select <strong>Add to Home Screen</strong>.</p>
+            </div>
+            
+            <div className="bg-white p-4 rounded-xl inline-block shadow-inner glow-hover">
+              <QRCodeSVG 
+                value="https://bharathrayidi.github.io/rayudbk_new_nse/" 
+                size={200}
+                bgColor={"#ffffff"}
+                fgColor={"#0f172a"}
+                level={"H"}
+                includeMargin={false}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

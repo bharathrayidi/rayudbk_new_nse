@@ -14,7 +14,8 @@ export default function Sidebar({
   toggleWatchlist,
   isIndex,
   isOpen,
-  setIsOpen
+  setIsOpen,
+  onOpenQRModal
 }) {
   
   const handleMenuClick = (shortcut, view) => {
@@ -108,6 +109,13 @@ export default function Sidebar({
         >
           <span className="material-symbols-outlined text-sm">terminal</span>
           <span className="font-label-caps text-xs">System Logs</span>
+        </button>
+        <button 
+          className="px-4 py-2 flex items-center gap-3 transition-all rounded text-on-surface-variant hover:bg-surface-container"
+          onClick={() => onOpenQRModal()}
+        >
+          <span className="material-symbols-outlined text-sm">qr_code_scanner</span>
+          <span className="font-label-caps text-xs">Mobile App QR</span>
         </button>
       </nav>
 
